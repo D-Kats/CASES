@@ -22,10 +22,12 @@ def refresh():
 
 def export2CSV():
     try:
-        csv_content = 'ID,PROTOCOL,ADIKHMA,KATASTASH,XRONOS_PERAIWSHS,SXOLIA\n'
+        csv_content = 'ID,ΠΡΩΤΟΚΟΛΛΟ,ΑΔΙΚΗΜΑ,ΚΑΤΑΣΤΑΣΗ,ΧΡΟΝΟΣ_ΠΕΡΑΙΩΣΗΣ,ΣΧΟΛΙΑ\n'
         c.execute('SELECT oid, * FROM ypotheseis')
         for row in c.fetchall():
-            csv_content += f'{row[0]}, {row[1]},{row[2]},{row[3]},{row[4]},{row[5]}\n' 
+            sx = row[5]
+            sx_fin = sx[:sx.find('\n')]
+            csv_content += f'{row[0]},{row[1]},{row[2]},{row[3]},{row[4]},{sx_fin}\n' 
         
         with open('csv_report.csv', 'w', encoding='utf-8') as fout:
             fout.write(csv_content)
@@ -147,16 +149,16 @@ while True:
                                     [sg.Button('Update', size=(8,1)), sg.Button('Insert', size=(8,1)), sg.Button('Delete', size=(8,1))]]
 
                 layout2 = [ [sg.Menu(menu_def, key='-MENUBAR-')],
-                            [sg.Image(data=win2ImageData1), sg.Text('ΜΩΥΣΙΑΔΗΣ CASES'), sg.Image(data=win2ImageData2)],
+                            [sg.Image(data=win2ImageData1), sg.Text('ΚΑΤΣΟΥΛΗΣ CASES'), sg.Image(data=win2ImageData2)],
                             [sg.Input(key='-PROTOCOLINPUT-', size=(10,1)), sg.Button('Find', size=(8,1), bind_return_key=True,), sg.Button('Refresh', size=(8,1))],
-                            [sg.Table(key='-TABLE-', font=('arial',12), values= data, headings=[' ID ',' ΠΡΩΤΟΚΟΛΛΟ ', 'ΑΔΙΚΗΜΑ', 'ΚΑΤΑΣΤΑΣΗ', 'ΧΡΟΝΟΣ ΠΕΡΑΙΩΣΗΣ', 'ΣΧΟΛΙΑ'], select_mode=sg.TABLE_SELECT_MODE_BROWSE, auto_size_columns=True, justification='center', enable_events=True, alternating_row_color= 'grey', num_rows=10, selected_row_colors=('white','#c23c53'))],       # note must create a layout from scratch every time. No reuse
+                            [sg.Table(key='-TABLE-', font=('arial',12), values= data, headings=[' ID ',' ΠΡΩΤΟΚΟΛΛΟ ', 'ΑΔΙΚΗΜΑ', 'ΚΑΤΑΣΤΑΣΗ', 'ΧΡΟΝΟΣ ΠΕΡΑΙΩΣΗΣ', 'ΣΧΟΛΙΑ'], select_mode=sg.TABLE_SELECT_MODE_BROWSE, auto_size_columns=True, justification='center', enable_events=True, alternating_row_color= 'grey', num_rows=20, selected_row_colors=('white','#c23c53'))],     
                             [sg.Frame('Ενημέρωση-Εισαγωγή-Διαγραφή Υπόθεσης', UpdateFrameLayout, element_justification='left')],
                             [sg.Button('Έξοδος', size=(8,1)), sg.Button('Χρόνοι', size=(8,1))]]  
 
                 win2 = sg.Window('CASES', layout2, element_justification='c')  
                 while True:  
                     ev2, vals2 = win2.Read() 
-                    print(ev2, vals2)
+                    # print(ev2, vals2)
                     #---menu events
                     if ev2 == 'Export to CSV':
                         export2CSV()
