@@ -141,11 +141,11 @@ while True:
                 menu_def = [['File', ['Export to CSV', 'Decrypt Files', 'Exit']],
                             ['Help', ['Documentation', 'About']],]           
 
-                UpdateFrameLayout = [[sg.Input(key='-UPDPROTOCOLINPUT-', size=(22,1)), sg.Text('Πρωτόκολλο Υπόθεσης')],
-                                    [sg.Input(key='-UPDADIKIMAINPUT-', size=(22,1)), sg.Text('Αδίκημα Υπόθεσης')],
-                                    [sg.Input(key='-UPDKATASTASHINPUT-', size=(22,1)), sg.Text('Κατάσταση Υπόθεσης')],
-                                    [sg.Input(key='-UPDPERAIWSHINPUT-', size=(22,1)), sg.Text('Χρόνος Περαίωσης')],
-                                    [sg.Multiline(key='-UPDSXOLIAINPUT-', size=(20,5)), sg.Text('Σχόλια Υπόθεσης')],                                                               
+                UpdateFrameLayout = [[sg.Input(key='-UPDPROTOCOLINPUT-', size=(52,1)), sg.Text('Πρωτόκολλο Υπόθεσης')],
+                                    [sg.Input(key='-UPDADIKIMAINPUT-', size=(52,1)), sg.Text('Αδίκημα Υπόθεσης')],
+                                    [sg.Input(key='-UPDKATASTASHINPUT-', size=(52,1)), sg.Text('Κατάσταση Υπόθεσης')],
+                                    [sg.Input(key='-UPDPERAIWSHINPUT-', size=(52,1)), sg.Text('Χρόνος Περαίωσης')],
+                                    [sg.Multiline(key='-UPDSXOLIAINPUT-', size=(50,5)), sg.Text('Σχόλια Υπόθεσης')],                                                               
                                     [sg.Button('Update', size=(8,1)), sg.Button('Insert', size=(8,1)), sg.Button('Delete', size=(8,1))]]
 
                 layout2 = [ [sg.Menu(menu_def, key='-MENUBAR-')],
