@@ -26,11 +26,12 @@ def export2CSV():
         c.execute('SELECT oid, * FROM ypotheseis')
         for row in c.fetchall():
             csv_content += f'{row[0]}, {row[1]},{row[2]},{row[3]},{row[4]},{row[5]}\n' 
-        root = os.getcwd()
-        with open(f'{root}\\CASES_files\\csv_report.csv', 'w', encoding='utf-8') as fout:
+        
+        with open('csv_report.csv', 'w', encoding='utf-8') as fout:
             fout.write(csv_content)
         sg.PopupOK(f'Το αρχείο CSV δημιουργήθηκε επιτυχώς\nστη διαδρομή{root}\\CASES_files!', title='!')
-    except:
+    except Exception as e:
+        print(e)
         sg.PopupOK('Σφάλμα κατά τη δημιουργία του CSV!', title='!')
 
 def peraiwsiAlert():
