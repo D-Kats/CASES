@@ -20,15 +20,29 @@ def refresh():
     win2['-UPDSXOLIAINPUT-'].update(value='')
     win2['-PROTOCOLINPUT-'].update(value='')
     win2['-UPDALERTINPUT-'].update(value='')
+    win2['-UPDETOSINPUT-'].update(value='')
+
+def sortByProt():
+    c.execute('SELECT oid, * FROM ypotheseis ORDER BY protocol')
+    data = c.fetchall()
+    win2['-TABLE-'].update(values=data)
+    win2['-UPDPROTOCOLINPUT-'].update(value='')
+    win2['-UPDADIKIMAINPUT-'].update(value='')
+    win2['-UPDKATASTASHINPUT-'].update(value='') 
+    win2['-UPDPERAIWSHINPUT-'].update(value='')
+    win2['-UPDSXOLIAINPUT-'].update(value='')
+    win2['-PROTOCOLINPUT-'].update(value='')
+    win2['-UPDALERTINPUT-'].update(value='')
+    win2['-UPDETOSINPUT-'].update(value='')
 
 def export2CSV():
     try:
-        csv_content = 'ID,ΠΡΩΤΟΚΟΛΛΟ,ΑΔΙΚΗΜΑ,ΚΑΤΑΣΤΑΣΗ,ΧΡΟΝΟΣ_ΠΕΡΑΙΩΣΗΣ,ΣΧΟΛΙΑ,ΥΠΕΝΘΥΜΙΣΗ\n'
+        csv_content = 'ID,ΠΡΩΤΟΚΟΛΛΟ,ΑΔΙΚΗΜΑ,ΚΑΤΑΣΤΑΣΗ,ΧΡΟΝΟΣ_ΠΕΡΑΙΩΣΗΣ,ΣΧΟΛΙΑ,ΥΠΕΝΘΥΜΙΣΗ,ΕΤΟΣ\n'
         c.execute('SELECT oid, * FROM ypotheseis')
         for row in c.fetchall():
             sx = row[5]
             sx_fin = sx[:sx.find('\n')]
-            csv_content += f'{row[0]},{row[1]},{row[2]},{row[3]},{row[4]},{sx_fin},{row[6]}\n' 
+            csv_content += f'{row[0]},{row[1]},{row[2]},{row[3]},{row[4]},{sx_fin},{row[6]},{row[7]}\n' 
         
         with open('csv_report.csv', 'w', encoding='utf-8') as fout:
             fout.write(csv_content)
@@ -80,28 +94,28 @@ def deleteYpothesh(oid, protocol):
     except:
         sg.PopupOK('Σφάλμα ανάγνωσης της Βάσης Δεδομένων\nΑνεπιτυχής διαγραφή υπόθεσης!', title='Warning')
 
-def updateYpothesh(prot, adik, kat, per, sxol, yp):
+def updateYpothesh(prot, adik, kat, per, sxol, yp, et):
     try:
         if sxol == '\n': # den exei grapsei sxolia alla emfanizei to newline to table opote to allazw se '' egw
-            c.execute('UPDATE ypotheseis SET protocol = (?), adikhma = (?), katastash = (?), xr_peraiwshs = (?), sxolia = (?), alert = (?) WHERE protocol == (?)', (prot, adik, kat, per, '', yp, prot,))
+            c.execute('UPDATE ypotheseis SET protocol = (?), adikhma = (?), katastash = (?), xr_peraiwshs = (?), sxolia = (?), alert = (?), etos = (?) WHERE protocol == (?)', (prot, adik, kat, per, '', yp, et, prot,))
             conn.commit()
             sg.PopupOK(f'Eπιτυχές update της υπόθεσης {prot}!', title=':)')
         else:
-            c.execute('UPDATE ypotheseis SET protocol = (?), adikhma = (?), katastash = (?), xr_peraiwshs = (?), sxolia = (?), alert = (?) WHERE protocol == (?)', (prot, adik, kat, per, sxol, yp, prot,))
+            c.execute('UPDATE ypotheseis SET protocol = (?), adikhma = (?), katastash = (?), xr_peraiwshs = (?), sxolia = (?), alert = (?), etos = (?) WHERE protocol == (?)', (prot, adik, kat, per, sxol, yp, et, prot,))
             conn.commit()
             sg.PopupOK(f'Eπιτυχές update της υπόθεσης {prot}!', title=':)')
     except: #Exception as e:
         # print(e)
         sg.PopupOK('Σφάλμα ανάγνωσης της Βάσης Δεδομένων\nΑνεπιτυχές update υπόθεσης!', title='Warning')
 
-def insertYpothesh(prot, adik, kat, per, sxol, yp):
+def insertYpothesh(prot, adik, kat, per, sxol, yp, et):
     try:
         if sxol == '\n': # den exei grapsei sxolia alla emfanizei to newline to table opote to allazw se '' egw
-            c.execute('INSERT INTO ypotheseis VALUES (?,?,?,?,?,?)', (prot, adik, kat, per, '', yp,))
+            c.execute('INSERT INTO ypotheseis VALUES (?,?,?,?,?,?,?)', (prot, adik, kat, per, '', yp, et,))
             conn.commit()
             sg.PopupOK(f'Eπιτυχής εισαγωγή της υπόθεσης {prot}!', title=':)')
         else:
-            c.execute('INSERT INTO ypotheseis VALUES (?,?,?,?,?,?)', (prot, adik, kat, per, sxol, yp,))
+            c.execute('INSERT INTO ypotheseis VALUES (?,?,?,?,?,?,?)', (prot, adik, kat, per, sxol, yp, et,))
             conn.commit()
             sg.PopupOK(f'Eπιτυχής εισαγωγή της υπόθεσης {prot}!', title=':)')
     except Exception as e:
@@ -167,13 +181,14 @@ while True:
                                     [sg.Input(key='-UPDKATASTASHINPUT-', size=(52,1)), sg.Text('Κατάσταση Υπόθεσης')],
                                     [sg.Input(key='-UPDPERAIWSHINPUT-', size=(52,1)), sg.Text('Χρόνος Περαίωσης')],
                                     [sg.Multiline(key='-UPDSXOLIAINPUT-', size=(50,5)), sg.Text('Σχόλια Υπόθεσης')],
-                                    [sg.Input(key='-UPDALERTINPUT-', size=(52,2)), sg.Text('Μήνυμα υπενθύμισης')],                                                               
+                                    [sg.Input(key='-UPDALERTINPUT-', size=(52,2)), sg.Text('Μήνυμα υπενθύμισης')],
+                                    [sg.Input(key='-UPDETOSINPUT-', size=(52,2)), sg.Text('Έτος υπόθεσης')],                                                            
                                     [sg.Button('Update', size=(8,1)), sg.Button('Insert', size=(8,1)), sg.Button('Delete', size=(8,1))]]
 
                 layout2 = [ [sg.Menu(menu_def, key='-MENUBAR-')],
                             [sg.Image(data=win2ImageData1), sg.Text('ΚΑΤΣΟΥΛΗΣ CASES'), sg.Image(data=win2ImageData2)],
-                            [sg.Input(key='-PROTOCOLINPUT-', size=(10,1)), sg.Button('Find', size=(8,1), bind_return_key=True,), sg.Button('Refresh', size=(8,1))],
-                            [sg.Table(key='-TABLE-', font=('arial',12), values= data, headings=[' ID ',' ΠΡΩΤΟΚΟΛΛΟ ', 'ΑΔΙΚΗΜΑ', 'ΚΑΤΑΣΤΑΣΗ', 'ΧΡΟΝΟΣ ΠΕΡΑΙΩΣΗΣ', 'ΣΧΟΛΙΑ', 'ΥΠΕΝΘΥΜΙΣΗ'], select_mode=sg.TABLE_SELECT_MODE_BROWSE, auto_size_columns=True, justification='center', enable_events=True, alternating_row_color= 'grey', num_rows=20, selected_row_colors=('white','#c23c53'))],     
+                            [sg.Input(key='-PROTOCOLINPUT-', size=(10,1)), sg.Button('Find', size=(8,1)), sg.Button('Refresh', size=(8,1)), sg.Button('Sort', size=(8,1))],
+                            [sg.Table(key='-TABLE-', font=('arial',11), values= data, headings=[' ID ',' ΠΡΩΤΟΚΟΛΛΟ ', 'ΑΔΙΚΗΜΑ', 'ΚΑΤΑΣΤΑΣΗ', 'ΧΡΟΝΟΣ ΠΕΡΑΙΩΣΗΣ', 'ΣΧΟΛΙΑ', 'ΥΠΕΝΘΥΜΙΣΗ', 'ΕΤΟΣ'], select_mode=sg.TABLE_SELECT_MODE_BROWSE,  auto_size_columns=True, justification='center', enable_events=True, alternating_row_color= 'grey', num_rows=20, selected_row_colors=('white','#c23c53'))],     
                             [sg.Frame('Ενημέρωση-Εισαγωγή-Διαγραφή Υπόθεσης', UpdateFrameLayout, element_justification='left')],
                             [sg.Button('Έξοδος', size=(8,1)), sg.Button('Χρόνοι', size=(8,1))]]  
 
@@ -195,7 +210,7 @@ while True:
                     if ev2 == 'Decrypt Files':
                         sg.PopupOK('Full paid version only!', title='!')
                     if ev2 == 'Documentation':
-                        sg.PopupOK('FIND: Ψάχνει συγκεκριμένο αριθμό πρωτοκόλλου και παρουσιάζει μόνο αυτή την εγγραφή στον πίνακα\n\nREFRESH: Κάνει Refresh τον πίνακα και φέρνει όλα τα αποτελέσματα της βάσης\n\nUPDATE: Κάνει update την εγγραφή που έχει επιλεγεί στον πίνακα με τα στοιχεία που έχουν δοθεί στα πεδία \n\nINSERT: Εισάγει στη βάση τη νέα υπόθεση με τα στοιχεία που έχουν δοθεί στα πεδία\n\nDELETE: Διαγράφει από τη βάση την υπόθεση που έχει επιλεχτεί στον πίνακα \n\nΧΡΟΝΟΙ: Τσεκάρει τη βάση και ειδοποιεί για υποθέσεις με χρόνους περαίωσης που λήγουν εντός 2 εβδομάδων\n\nΜΗΝΥΜΑ ΥΠΕΝΘΥΜΙΣΗΣ: Pop Up μήνυμα με το περιεχόμενο της υπενθύμισης κάθε φορά που κάνει login ο χρήστης', title='Documentation')
+                        sg.PopupOK('FIND: Ψάχνει συγκεκριμένο αριθμό πρωτοκόλλου και παρουσιάζει μόνο αυτή την εγγραφή στον πίνακα\n\nREFRESH: Κάνει Refresh τον πίνακα και φέρνει όλα τα αποτελέσματα της βάσης\n\nSORT: Σορτάρει τον πίνακα με τις υποθέσεις βάση αριθμού πρωτοκόλλου (Αύξουσα ταξινόμηση)\n\nUPDATE: Κάνει update την εγγραφή που έχει επιλεγεί στον πίνακα με τα στοιχεία που έχουν δοθεί στα πεδία \n\nINSERT: Εισάγει στη βάση τη νέα υπόθεση με τα στοιχεία που έχουν δοθεί στα πεδία\n\nDELETE: Διαγράφει από τη βάση την υπόθεση που έχει επιλεχτεί στον πίνακα \n\nΧΡΟΝΟΙ: Τσεκάρει τη βάση και παρουσιάζει όλους τους χρόνους περαίωσης που υπάρχουν. Ειδοποιεί για υποθέσεις με χρόνους περαίωσης που λήγουν εντός μήνα\n\nΜΗΝΥΜΑ ΥΠΕΝΘΥΜΙΣΗΣ: Pop Up μήνυμα με το περιεχόμενο της υπενθύμισης κάθε φορά που κάνει login ο χρήστης', title='Documentation')
                     if ev2 == 'About':
                         sg.PopupOK('CASES Ver. 1.0.1 \n\n --DKats 2020', title='-About-')
 
@@ -214,6 +229,7 @@ while True:
                         win2['-UPDPERAIWSHINPUT-'].update(value=row[4])
                         win2['-UPDSXOLIAINPUT-'].update(value=row[5])
                         win2['-UPDALERTINPUT-'].update(value=row[6])
+                        win2['-UPDETOSINPUT-'].update(value=row[7])
 
                     if ev2 == 'Find':
                         if vals2['-PROTOCOLINPUT-'] == '':
@@ -230,6 +246,7 @@ while True:
                                 win2['-UPDPERAIWSHINPUT-'].update(value='')
                                 win2['-UPDSXOLIAINPUT-'].update(value='')
                                 win2['-UPDALERTINPUT-'].update(value='')
+                                win2['-UPDETOSINPUT-'].update(value='')
                             else:
                                 sg.PopupOK(f'Ο αριθμός πρωτοκόλλου για εύρεση δεν υπάρχει στη βάση!', title='!')
                                 win2['-UPDPROTOCOLINPUT-'].update(value='')
@@ -239,9 +256,13 @@ while True:
                                 win2['-UPDSXOLIAINPUT-'].update(value='')
                                 win2['-PROTOCOLINPUT-'].update(value='')
                                 win2['-UPDALERTINPUT-'].update(value='')
+                                win2['-UPDETOSINPUT-'].update(value='')
                     
                     if ev2 == 'Refresh':
                         refresh()
+
+                    if ev2 == 'Sort':
+                        sortByProt()
 
                     if ev2 == 'Update':
                         if vals2['-UPDPROTOCOLINPUT-'] == '': # pathse update xwris na exei epileksei ypothesh h' me sbhsmenh timh
@@ -250,11 +271,13 @@ while True:
                             c.execute('SELECT oid, * FROM ypotheseis WHERE protocol == (?)', (vals2['-UPDPROTOCOLINPUT-'],)) 
                             if c.fetchone() != None: # ara yparxei ypothesh me ayto to protocolo sth bash
                                 if vals2['-UPDPERAIWSHINPUT-'] == '': # den exei dwsei xrono peraiwshs opote proxwraw kanonika sto update
-                                    updateYpothesh(vals2['-UPDPROTOCOLINPUT-'], vals2['-UPDADIKIMAINPUT-'], vals2['-UPDKATASTASHINPUT-'], vals2['-UPDPERAIWSHINPUT-'], vals2['-UPDSXOLIAINPUT-'], vals2['-UPDALERTINPUT-'])
+                                    updateYpothesh(vals2['-UPDPROTOCOLINPUT-'], vals2['-UPDADIKIMAINPUT-'], vals2['-UPDKATASTASHINPUT-'], vals2['-UPDPERAIWSHINPUT-'], vals2['-UPDSXOLIAINPUT-'], vals2['-UPDALERTINPUT-'], vals2['-UPDETOSINPUT-'])
+                                    refresh()
                                 else: # exei dwsei xrono peraiwshs opote prepei na kanw sanity check sto format ths hmeromhnias prin kanw to update
                                     allowed_chars = ['0','1','2','3','4','5','6','7','8','9','-']
                                     if all(chars in allowed_chars for chars in vals2['-UPDPERAIWSHINPUT-']):
-                                        updateYpothesh(vals2['-UPDPROTOCOLINPUT-'], vals2['-UPDADIKIMAINPUT-'], vals2['-UPDKATASTASHINPUT-'], vals2['-UPDPERAIWSHINPUT-'], vals2['-UPDSXOLIAINPUT-'], vals2['-UPDALERTINPUT-'])
+                                        updateYpothesh(vals2['-UPDPROTOCOLINPUT-'], vals2['-UPDADIKIMAINPUT-'], vals2['-UPDKATASTASHINPUT-'], vals2['-UPDPERAIWSHINPUT-'], vals2['-UPDSXOLIAINPUT-'], vals2['-UPDALERTINPUT-'], vals2['-UPDETOSINPUT-'])
+                                        refresh()
                                     else:
                                         sg.PopupOK(f'Λάθος format ημερομηνίας χρόνου περαίωσης! Αποδεκτή μορφή: π.χ. 01-01-1970', title='!') 
                             else: # den yparxei sth bash ypothesh me to protocolo pou edwse gia update 
@@ -269,11 +292,13 @@ while True:
                                 sg.PopupOK(f'Yπόθεση με ίδιο αριθμό πρωτοκόλλου υπάρχει ήδη στη βάση! Δοκίμασε update', title='!')
                             else: # to protocolo den yparxei hdh opote mporei na eisax8ei
                                 if vals2['-UPDPERAIWSHINPUT-'] == '': # den exei dwsei xrono peraiwshs opote proxwraw kanonika sto insert xwris kanena elegxo
-                                    insertYpothesh(vals2['-UPDPROTOCOLINPUT-'], vals2['-UPDADIKIMAINPUT-'], vals2['-UPDKATASTASHINPUT-'], vals2['-UPDPERAIWSHINPUT-'], vals2['-UPDSXOLIAINPUT-'], vals2['-UPDALERTINPUT-'])
+                                    insertYpothesh(vals2['-UPDPROTOCOLINPUT-'], vals2['-UPDADIKIMAINPUT-'], vals2['-UPDKATASTASHINPUT-'], vals2['-UPDPERAIWSHINPUT-'], vals2['-UPDSXOLIAINPUT-'], vals2['-UPDALERTINPUT-'], vals2['-UPDETOSINPUT-'])
+                                    refresh()
                                 else: # exei dwsei xrono peraiwshs opote prepei na kanw sanity check sto format ths hmeromhnias prin kanw to insert
                                     allowed_chars = ['0','1','2','3','4','5','6','7','8','9','-']
                                     if all(chars in allowed_chars for chars in vals2['-UPDPERAIWSHINPUT-']):
-                                        insertYpothesh(vals2['-UPDPROTOCOLINPUT-'], vals2['-UPDADIKIMAINPUT-'], vals2['-UPDKATASTASHINPUT-'], vals2['-UPDPERAIWSHINPUT-'], vals2['-UPDSXOLIAINPUT-'], vals2['-UPDALERTINPUT-'])
+                                        insertYpothesh(vals2['-UPDPROTOCOLINPUT-'], vals2['-UPDADIKIMAINPUT-'], vals2['-UPDKATASTASHINPUT-'], vals2['-UPDPERAIWSHINPUT-'], vals2['-UPDSXOLIAINPUT-'], vals2['-UPDALERTINPUT-'], vals2['-UPDETOSINPUT-'])
+                                        refresh()
                                     else:
                                         sg.PopupOK(f'Λάθος format ημερομηνίας χρόνου περαίωσης! Αποδεκτή μορφή: π.χ. 01-01-1970', title='!') 
 
