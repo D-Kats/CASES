@@ -48,7 +48,7 @@ def export2CSV():
             fout.write(csv_content)
         sg.PopupOK(f'Το αρχείο CSV δημιουργήθηκε επιτυχώς\nστη διαδρομή{root}\\CASES_files!', title='!')
     except Exception as e:
-        print(e)
+        log+=f'{e}\n\n'
         sg.PopupOK('Σφάλμα κατά τη δημιουργία του CSV!', title='!')
 
 def peraiwsiAlert():
@@ -82,8 +82,8 @@ def peraiwsiAlert():
                 for prot in protocol_list:
                     protocol_str += f'{prot} ' 
                 sg.PopupOK(f'Οι υποθέσεις {protocol_str}έχουν χρόνο περαίωσης που λήγει εντός 2 εβδομάδων!', title='!')
-    except: #Exception as e:
-        # print(e)
+    except Exception as e:
+        log+=f'{e}\n\n'
         sg.PopupOK('Σφάλμα ανάγνωσης της Βάσης Δεδομένων\nΑνεπιτυχής έλεγχος για χρόνους περαίωσης!', title='!') #8a skasei an sth sthlh xr_peraiwshs exei mpei otidhpote allo ektos apo keno (NULL) ;h hmeromhnia typoy 03-11-2019
 
 def deleteYpothesh(oid, protocol):
@@ -91,7 +91,8 @@ def deleteYpothesh(oid, protocol):
         c.execute('DELETE FROM ypotheseis WHERE oid == (?)', (oid,))
         conn.commit()
         sg.PopupOK(f'H υπόθεση με αριθμό πρωτοκόλλου {protocol} διαγράφηκε από τη βάση', title='!')
-    except:
+    except Exception as e:
+        log+=f'{e}\n\n'
         sg.PopupOK('Σφάλμα ανάγνωσης της Βάσης Δεδομένων\nΑνεπιτυχής διαγραφή υπόθεσης!', title='Warning')
 
 def updateYpothesh(prot, adik, kat, per, sxol, yp, et):
@@ -104,8 +105,8 @@ def updateYpothesh(prot, adik, kat, per, sxol, yp, et):
             c.execute('UPDATE ypotheseis SET protocol = (?), adikhma = (?), katastash = (?), xr_peraiwshs = (?), sxolia = (?), alert = (?), etos = (?) WHERE protocol == (?)', (prot, adik, kat, per, sxol, yp, et, prot,))
             conn.commit()
             sg.PopupOK(f'Eπιτυχές update της υπόθεσης {prot}!', title=':)')
-    except: #Exception as e:
-        # print(e)
+    except Exception as e:
+        log+=f'{e}\n\n'
         sg.PopupOK('Σφάλμα ανάγνωσης της Βάσης Δεδομένων\nΑνεπιτυχές update υπόθεσης!', title='Warning')
 
 def insertYpothesh(prot, adik, kat, per, sxol, yp, et):
@@ -119,7 +120,7 @@ def insertYpothesh(prot, adik, kat, per, sxol, yp, et):
             conn.commit()
             sg.PopupOK(f'Eπιτυχής εισαγωγή της υπόθεσης {prot}!', title=':)')
     except Exception as e:
-        print(e)
+        log+=f'{e}\n\n'
         sg.PopupOK('Σφάλμα ανάγνωσης της Βάσης Δεδομένων\nΑνεπιτυχές update υπόθεσης!', title='Warning')
 
 LoginPassword = '1234'
@@ -193,16 +194,14 @@ while True:
                             [sg.Button('Έξοδος', size=(8,1)), sg.Button('Χρόνοι', size=(8,1))]]  
 
                 win2 = sg.Window('CASES', layout2, element_justification='c')
-                # ---ALERTS
-                # if alertRunOnce:
-                #         alertRunOnce = False # gia na treksei mono mia fora
-                #         c.execute('SELECT oid, * FROM ypotheseis')
-                #         for row in c.fetchall():
-                #             if row[5] != '':
-                #                 sg.PopupOK(f'Υπενθύμιση για την {row[1]}: {row[5]}!', title='!')  
-                while True:  
+
+                # ---Logging string initialization                
+                log = f'-----START LOGGING DATETIME: {datetime.today()}-----\n\n'
+
+                while True:                      
                     ev2, vals2 = win2.Read() 
                     # print(ev2, vals2)
+                    log+=f'Event:{ev2} , Values:{vals2}\n\n'
 
                     #---menu events
                     if ev2 == 'Export to CSV':
@@ -212,7 +211,7 @@ while True:
                     if ev2 == 'Documentation':
                         sg.PopupOK('FIND: Ψάχνει συγκεκριμένο αριθμό πρωτοκόλλου και παρουσιάζει μόνο αυτή την εγγραφή στον πίνακα\n\nREFRESH: Κάνει Refresh τον πίνακα και φέρνει όλα τα αποτελέσματα της βάσης\n\nSORT: Σορτάρει τον πίνακα με τις υποθέσεις βάση αριθμού πρωτοκόλλου (Αύξουσα ταξινόμηση)\n\nUPDATE: Κάνει update την εγγραφή που έχει επιλεγεί στον πίνακα με τα στοιχεία που έχουν δοθεί στα πεδία \n\nINSERT: Εισάγει στη βάση τη νέα υπόθεση με τα στοιχεία που έχουν δοθεί στα πεδία\n\nDELETE: Διαγράφει από τη βάση την υπόθεση που έχει επιλεχτεί στον πίνακα \n\nΧΡΟΝΟΙ: Τσεκάρει τη βάση και παρουσιάζει όλους τους χρόνους περαίωσης που υπάρχουν. Ειδοποιεί για υποθέσεις με χρόνους περαίωσης που λήγουν εντός μήνα\n\nΜΗΝΥΜΑ ΥΠΕΝΘΥΜΙΣΗΣ: Pop Up μήνυμα με το περιεχόμενο της υπενθύμισης κάθε φορά που κάνει login ο χρήστης', title='Documentation')
                     if ev2 == 'About':
-                        sg.PopupOK('CASES Ver. 1.0.1 \n\n --DKats 2020', title='-About-')
+                        sg.PopupOK('CASES Ver. 1.0.2 \n\n --DKats 2020', title='-About-')
 
                     #---button events    
                     if ev2 == 'Χρόνοι':
@@ -325,7 +324,10 @@ while True:
                         if not os.path.exists(f'C:\\Users\\{user}\\AppData\\Local\\DKatsForensics'):
                             os.mkdir(f'C:\\Users\\{user}\\AppData\\Local\\DKatsForensics')
                         shutil.copy('CASES.zip', f'C:\\Users\\{user}\\AppData\\Local\\DKatsForensics')
-                        os.remove('CASES.db')                            
+                        os.remove('CASES.db')
+                        #---writing the log file
+                        with open('CASES.log', 'a', encoding='utf-8') as fout:
+                            fout.write(log)                            
                         win2.Close()
                         win1.Close()  
                         break
