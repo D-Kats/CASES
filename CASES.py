@@ -39,24 +39,35 @@ def export2CSV():
 
 def peraiwsiAlert():
     try:
-        protocol_list = []        
-        today_dt= datetime.today() # datetime object ths shmerinhs meras
+        #--- geniko output
+        geniko_list = ''
         c.execute('SELECT oid, * FROM ypotheseis')
         for row in c.fetchall():
             if row[4] != '':
-                t_dt = datetime.strptime(row[4], '%d-%m-%Y') # datetime object tou xronou peraiwshs KINDYNOS na exei timh pou den mporei na metatrapei se datetime object
-                difference = (t_dt-today_dt).days
-                if difference>0 and difference<15:
-                    protocol_list.append(f'{row[1]}')                     
-        if len(protocol_list) == 0:
-            sg.PopupOK('Δεν υπάρχουν υποθέσεις με χρόνο περαίωσης που να λήγει εντός 2 εβδομάδων!', title='!')
-        elif len(protocol_list) == 1:
-            sg.PopupOK(f'H υπόθεση {protocol_list[0]} έχει χρόνο περαίωσης που λήγει εντός 2 εβδομάδων!', title='!')
+                geniko_list+=f'\n{row[1]}: {row[4]}'
+        if len(geniko_list) == 0:
+            sg.PopupOK('Δεν υπάρχουν υποθέσεις με χρόνο περαίωσης στη βάση', title='!')
         else:
-            protocol_str = ''
-            for prot in protocol_list:
-                protocol_str += f'{prot} ' 
-            sg.PopupOK(f'Οι υποθέσεις {protocol_str}έχουν χρόνο περαίωσης που λήγει εντός 2 εβδομάδων!', title='!')
+            sg.PopupOK(f'Υποθέσεις με χρόνο περαίωσης:{geniko_list}', title='!')
+            #--- eidopoihsh gia 2 evdomades
+            protocol_list = []        
+            today_dt= datetime.today() # datetime object ths shmerinhs meras
+            c.execute('SELECT oid, * FROM ypotheseis')
+            for row in c.fetchall():
+                if row[4] != '':
+                    t_dt = datetime.strptime(row[4], '%d-%m-%Y') # datetime object tou xronou peraiwshs KINDYNOS na exei timh pou den mporei na metatrapei se datetime object
+                    difference = (t_dt-today_dt).days
+                    if difference>0 and difference<30:
+                        protocol_list.append(f'{row[1]}')                     
+            if len(protocol_list) == 0:
+                sg.PopupOK('Δεν υπάρχουν υποθέσεις με χρόνο περαίωσης που να λήγει εντός μήνα!', title='!')
+            elif len(protocol_list) == 1:
+                sg.PopupOK(f'H υπόθεση {protocol_list[0]} έχει χρόνο περαίωσης που λήγει εντός μήνα!', title='!')
+            else:
+                protocol_str = ''
+                for prot in protocol_list:
+                    protocol_str += f'{prot} ' 
+                sg.PopupOK(f'Οι υποθέσεις {protocol_str}έχουν χρόνο περαίωσης που λήγει εντός 2 εβδομάδων!', title='!')
     except: #Exception as e:
         # print(e)
         sg.PopupOK('Σφάλμα ανάγνωσης της Βάσης Δεδομένων\nΑνεπιτυχής έλεγχος για χρόνους περαίωσης!', title='!') #8a skasei an sth sthlh xr_peraiwshs exei mpei otidhpote allo ektos apo keno (NULL) ;h hmeromhnia typoy 03-11-2019
