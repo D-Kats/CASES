@@ -156,7 +156,7 @@ while True:
                                     [sg.Input(key='-UPDKATASTASHINPUT-', size=(52,1)), sg.Text('Κατάσταση Υπόθεσης')],
                                     [sg.Input(key='-UPDPERAIWSHINPUT-', size=(52,1)), sg.Text('Χρόνος Περαίωσης')],
                                     [sg.Multiline(key='-UPDSXOLIAINPUT-', size=(50,5)), sg.Text('Σχόλια Υπόθεσης')],
-                                    [sg.Input(key='-UPDALERTINPUT-', size=(52,1)), sg.Text('Μήνυμα υπενθύμισης')],                                                               
+                                    [sg.Input(key='-UPDALERTINPUT-', size=(52,2)), sg.Text('Μήνυμα υπενθύμισης')],                                                               
                                     [sg.Button('Update', size=(8,1)), sg.Button('Insert', size=(8,1)), sg.Button('Delete', size=(8,1))]]
 
                 layout2 = [ [sg.Menu(menu_def, key='-MENUBAR-')],
@@ -184,7 +184,7 @@ while True:
                     if ev2 == 'Decrypt Files':
                         sg.PopupOK('Full paid version only!', title='!')
                     if ev2 == 'Documentation':
-                        sg.PopupOK('FIND: Ψάχνει συγκεκριμένο αριθμό πρωτοκόλλου και παρουσιάζει μόνο αυτή την εγγραφή στον πίνακα\n\nREFRESH: Κάνει Refresh τον πίνακα και φέρνει όλα τα αποτελέσματα της βάσης\n\nUPDATE: Κάνει update την εγγραφή που έχει επιλεγεί στον πίνακα με τα στοιχεία που έχουν δοθεί στα πεδία \n\nINSERT: Εισάγει στη βάση τη νέα υπόθεση με τα στοιχεία που έχουν δοθεί στα πεδία\n\nDELETE: Διαγράφει από τη βάση την υπόθεση που έχει επιλεχτεί στον πίνακα \n\nΧΡΟΝΟΙ: Τσεκάρει τη βάση και ειδοποιεί για υποθέσεις με χρόνους περαίωσης που λήγουν εντός 2 εβδομάδων', title='Documentation')
+                        sg.PopupOK('FIND: Ψάχνει συγκεκριμένο αριθμό πρωτοκόλλου και παρουσιάζει μόνο αυτή την εγγραφή στον πίνακα\n\nREFRESH: Κάνει Refresh τον πίνακα και φέρνει όλα τα αποτελέσματα της βάσης\n\nUPDATE: Κάνει update την εγγραφή που έχει επιλεγεί στον πίνακα με τα στοιχεία που έχουν δοθεί στα πεδία \n\nINSERT: Εισάγει στη βάση τη νέα υπόθεση με τα στοιχεία που έχουν δοθεί στα πεδία\n\nDELETE: Διαγράφει από τη βάση την υπόθεση που έχει επιλεχτεί στον πίνακα \n\nΧΡΟΝΟΙ: Τσεκάρει τη βάση και ειδοποιεί για υποθέσεις με χρόνους περαίωσης που λήγουν εντός 2 εβδομάδων\n\nΜΗΝΥΜΑ ΥΠΕΝΘΥΜΙΣΗΣ: Pop Up μήνυμα με το περιεχόμενο της υπενθύμισης κάθε φορά που κάνει login ο χρήστης', title='Documentation')
                     if ev2 == 'About':
                         sg.PopupOK('CASES Ver. 1.0.1 \n\n --DKats 2020', title='-About-')
 
